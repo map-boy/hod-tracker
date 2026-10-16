@@ -1,0 +1,49 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{db}/documents {
+    function signedIn() { return request.auth != null; }
+    function isStaff() { return signedIn() && exists(/databases/$(db)/documents/staff/$(request.auth.uid)); }
+    function isHod() { return isStaff() && get(/databases/$(db)/documents/staff/$(request.auth.uid)).data.role == 'hod'; }
+
+    match /staff/{uid} {
+      allow get: if signedIn() && request.auth.uid == uid;
+      allow list, write: if false;
+    }
+
+    match /classes/{token} {
+      allow get: if true;
+      allow list: if isStaff();
+      allow create: if isStaff()
+        && request.resource.data.keys().hasOnly(['code', 'program', 'year', 'createdBy', 'createdAt'])
+        && request.resource.data.createdBy == request.auth.uid;
+      allow update, delete: if isHod();
+    }
+
+    match /groups/{id} {
+      allow get: if signedIn();
+      allow list: if isStaff();
+      allow create: if signedIn()
+        && request.resource.data.affected == 1
+        && request.resource.data.status == 'submitted';
+      allow update: if isHod()
+        || (signedIn()
+            && request.resource.data.affected == resource.data.affected + 1
+            && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['affected', 'updatedAt', 'blocksRegistration']));
+      allow delete: if isHod();
+    }
+
+    match /cases/{id} {
+      allow create: if signedIn()
+        && request.resource.data.keys().hasOnly(['groupId', 'classId', 'uid', 'regNo', 'name', 'phone', 'courseCode', 'issueType', 'description', 'proofUrls', 'blocksRegistration', 'status', 'createdAt', 'updatedAt'])
+        && request.resource.data.uid == request.auth.uid
+        && request.resource.data.status == 'submitted'
+        && request.resource.data.regNo.size() <= 20
+        && request.resource.data.phone.size() <= 20
+        && request.resource.data.description.size() <= 2000;
+      allow get: if signedIn() && (resource.data.uid == request.auth.uid || isStaff());
+      allow list: if isStaff();
+      allow update: if isHod();
+      allow delete: if false;
+    }
+  }
+}

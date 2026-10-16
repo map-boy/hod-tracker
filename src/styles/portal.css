@@ -19,3 +19,6 @@ button { background: #0095d0; color: #fff; border: 0; padding: 8px 16px; font: i
 .tag.red { background: #d9392b; } .tag.blue { background: #0095d0; } .tag.green { background: #5a8f00; }
 .foot { text-align: center; padding: 14px; background: #fff; border-top: 1px solid #ddd; color: #0071a0; font-weight: bold; }
 @media (max-width: 760px) { .hdr { height: auto; } .nav { flex-wrap: wrap; height: auto; } }
+label input[type="checkbox"] { width: auto; margin-right: 6px; }
+.err { color: #d9392b; font-weight: bold; }
+td { vertical-align: top; }

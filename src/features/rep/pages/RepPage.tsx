@@ -1,5 +1,13 @@
 import Panel from '../../../shared/ui/Panel';
+import RequireStaff from '../../../shared/ui/RequireStaff';
+import ClassManager from '../components/ClassManager';
 
 export default function RepPage() {
-  return <Panel title="Class representative">Bulk CSV, class QR, class cases.</Panel>;
+  return (
+    <RequireStaff roles={['rep', 'hod']} title="Class representative">
+      <Panel title="Class representative">
+        <ClassManager />
+      </Panel>
+    </RequireStaff>
+  );
 }
