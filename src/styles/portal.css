@@ -1,17 +1,13 @@
 * { box-sizing: border-box; }
 body { margin: 0; font: 12px Arial, Helvetica, sans-serif; color: #222; background: #eee; }
 .hdr { background: #0095d0; color: #fff; height: 90px; padding: 10px 14px; }
-.hdr h1 { margin: 0; font-size: 16px; font-weight: bold; }
-.hdr small { font-size: 12px; }
+.hdr h1 { margin: 0; font-size: 16px; }
 .nav { background: #0071a0; display: flex; height: 36px; }
 .nav a { color: #fff; padding: 11px 16px; font-weight: bold; text-decoration: none; }
 .nav a.active { background: #fff; color: #0071a0; }
-.wrap { display: flex; gap: 12px; padding: 16px; align-items: flex-start; }
-.side { width: 270px; }
-.side a { display: block; background: #fff; padding: 12px; margin-bottom: 4px; color: #0071a0; font-weight: bold; text-decoration: none; border-left: 3px solid transparent; }
-.side a.active { border-left-color: #0095d0; }
+.wrap { display: flex; padding: 16px; }
 .main { flex: 1; background: #fff; border: 1px solid #ddd; }
-.main > .title { background: #f3f3f3; padding: 10px 14px; border-bottom: 1px solid #ddd; text-transform: uppercase; }
+.title { background: #f3f3f3; padding: 10px 14px; border-bottom: 1px solid #ddd; text-transform: uppercase; }
 .body { padding: 14px; }
 table { width: 100%; border-collapse: collapse; }
 th { background: #f3f3f3; text-align: left; }
@@ -19,8 +15,7 @@ th, td { padding: 8px 10px; border: 1px solid #ddd; }
 label { display: block; margin: 10px 0 3px; font-weight: bold; }
 input, select, textarea { width: 100%; padding: 7px; border: 1px solid #bbb; font: inherit; }
 button { background: #0095d0; color: #fff; border: 0; padding: 8px 16px; font: inherit; font-weight: bold; cursor: pointer; }
-button.alt { background: #777; }
 .tag { padding: 2px 6px; color: #fff; font-size: 11px; }
 .tag.red { background: #d9392b; } .tag.blue { background: #0095d0; } .tag.green { background: #5a8f00; }
 .foot { text-align: center; padding: 14px; background: #fff; border-top: 1px solid #ddd; color: #0071a0; font-weight: bold; }
-@media (max-width: 760px) { .wrap { flex-direction: column; } .side { width: 100%; } .hdr { height: auto; } }
+@media (max-width: 760px) { .hdr { height: auto; } .nav { flex-wrap: wrap; height: auto; } }
