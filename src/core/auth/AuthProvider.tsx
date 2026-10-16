@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState, type ReactNode } from 'react';
 import { GoogleAuthProvider, onAuthStateChanged, signInAnonymously, signInWithPopup, signOut, type User } from 'firebase/auth';
 import { doc, getDoc } from 'firebase/firestore';
 import { auth, db } from '../firebase';
+import { DEV_EMAIL } from '../config';
 import type { Role } from '../domain';
 import { AuthContext, type AuthState } from './context';
 
@@ -10,9 +11,11 @@ const signOutStaff = async (): Promise<void> => { await signOut(auth); };
 const ensureUser = async (): Promise<User> => auth.currentUser ?? (await signInAnonymously(auth)).user;
 
 async function resolveRole(user: User | null): Promise<Role> {
-  if (!user || user.isAnonymous) return 'student';
+  const email = user?.email?.toLowerCase();
+  if (!user || user.isAnonymous || !email) return 'student';
+  if (user.emailVerified && email === DEV_EMAIL) return 'developer';
   try {
-    const snap = await getDoc(doc(db, 'staff', user.uid));
+    const snap = await getDoc(doc(db, 'staffEmails', email));
     const r = snap.data()?.role;
     return r === 'hod' || r === 'rep' ? r : 'student';
   } catch {

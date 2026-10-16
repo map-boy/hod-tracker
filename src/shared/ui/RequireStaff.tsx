@@ -1,7 +1,9 @@
-import type { ReactNode } from 'react';
+import { lazy, Suspense, type ReactNode } from 'react';
 import { useAuth } from '../../core/auth/context';
 import type { Role } from '../../core/domain';
 import Panel from './Panel';
+
+const DeveloperConsole = lazy(() => import('../../features/developer/components/DeveloperConsole'));
 
 export default function RequireStaff({ roles, title, children }: { roles: Role[]; title: string; children: ReactNode }) {
   const { user, role, ready, signInStaff, signOutStaff } = useAuth();
@@ -14,11 +16,18 @@ export default function RequireStaff({ roles, title, children }: { roles: Role[]
       </Panel>
     );
   }
+  if (role === 'developer') {
+    return (
+      <Suspense fallback={<Panel title={title}>Loading...</Panel>}>
+        <DeveloperConsole />
+      </Suspense>
+    );
+  }
   if (!roles.includes(role)) {
     return (
       <Panel title={title}>
-        <p>Signed in as {user.email}. This account has no access yet.</p>
-        <p>Send this ID to the administrator: <b>{user.uid}</b></p>
+        <p>Signed in as {user.email}. This email has not been given access.</p>
+        <p>Ask the Head of Department to add your email.</p>
         <button type="button" onClick={() => void signOutStaff()}>Sign out</button>
       </Panel>
     );

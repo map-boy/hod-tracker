@@ -2,12 +2,20 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{db}/documents {
     function signedIn() { return request.auth != null; }
-    function isStaff() { return signedIn() && exists(/databases/$(db)/documents/staff/$(request.auth.uid)); }
-    function isHod() { return isStaff() && get(/databases/$(db)/documents/staff/$(request.auth.uid)).data.role == 'hod'; }
+    function hasEmail() { return signedIn() && 'email' in request.auth.token && request.auth.token.email != null; }
+    function myEmail() { return request.auth.token.email.lower(); }
+    function isDev() { return hasEmail() && request.auth.token.email_verified == true && myEmail() == 'techubwenge@gmail.com'; }
+    function staffDoc() { return get(/databases/$(db)/documents/staffEmails/$(myEmail())); }
+    function isStaff() { return isDev() || (hasEmail() && exists(/databases/$(db)/documents/staffEmails/$(myEmail()))); }
+    function isHod() { return isDev() || (isStaff() && staffDoc().data.role == 'hod'); }
+    function staffShape() { return request.resource.data.keys().hasOnly(['role', 'addedBy', 'addedAt']); }
 
-    match /staff/{uid} {
-      allow get: if signedIn() && request.auth.uid == uid;
-      allow list, write: if false;
+    match /staffEmails/{em} {
+      allow get: if hasEmail() && (myEmail() == em || isStaff());
+      allow list: if isHod();
+      allow create: if isDev() || (isHod() && staffShape() && request.resource.data.role == 'rep' && request.resource.data.addedBy == myEmail());
+      allow update: if isDev() || (isHod() && staffShape() && resource.data.role == 'rep' && request.resource.data.role == 'rep');
+      allow delete: if isDev() || (isHod() && resource.data.role == 'rep');
     }
 
     match /classes/{token} {
@@ -44,6 +52,10 @@ service cloud.firestore {
       allow list: if isStaff();
       allow update: if isHod();
       allow delete: if false;
+    }
+
+    match /{document=**} {
+      allow read, write: if isDev();
     }
   }
 }

@@ -1,6 +1,7 @@
 export type Status = 'submitted' | 'verified' | 'forwarded' | 'resolved' | 'confirmed' | 'reopened';
 export type IssueType = 'zero_marks' | 'missing_marks' | 'wrong_marks' | 'registration_blocked' | 'other';
-export type Role = 'student' | 'rep' | 'hod';
+export type Role = 'student' | 'rep' | 'hod' | 'developer';
+export type StaffRole = 'hod' | 'rep';
 
 export const ISSUE_LABELS: Record<IssueType, string> = {
   zero_marks: 'Zero marks',
@@ -10,6 +11,7 @@ export const ISSUE_LABELS: Record<IssueType, string> = {
   other: 'Other',
 };
 
+export interface StaffMember { email: string; role: StaffRole; addedBy: string; addedAt: number }
 export interface ClassRoom { id: string; code: string; program: string; year: number; createdBy: string; createdAt: number }
 export interface Group {
   id: string; classId: string; courseCode: string; issueType: IssueType; title: string;
